@@ -1,3 +1,4 @@
+import '../../../../core/database/database_helper.dart';
 import '../../../../core/network/mock_client.dart';
 import '../domain/entities/user_entity.dart';
 import '../domain/repository_interfaces/auth_repository.dart';
@@ -9,11 +10,18 @@ class MockAuthRepository implements AuthRepository {
   @override
   Future<UserEntity> login(String email, String password, UserRole role) async {
     return MockClient.simulateNetworkCall(
-      onSuccess: () {
-        final user = role == UserRole.faculty ? UserModel.mockFaculty : UserModel.mockStudent;
+      onSuccess: () async {
+        // Query local sqflite database
+        var user = await DatabaseHelper.instance.getUserByEmail(email);
+        if (user == null) {
+          // Fallback to default mock if not found in db
+          user = role == UserRole.faculty ? UserModel.mockFaculty : UserModel.mockStudent;
+          await DatabaseHelper.instance.insertUser(user);
+        }
         _cachedUser = user;
         return user;
       },
+      delayMs: 600,
     );
   }
 
@@ -27,7 +35,7 @@ class MockAuthRepository implements AuthRepository {
     required UserRole role,
   }) async {
     return MockClient.simulateNetworkCall(
-      onSuccess: () {
+      onSuccess: () async {
         final user = UserModel(
           id: 'u_${DateTime.now().millisecondsSinceEpoch}',
           name: name,
@@ -36,9 +44,12 @@ class MockAuthRepository implements AuthRepository {
           department: department,
           role: role,
         );
+        // Save to local sqflite database
+        await DatabaseHelper.instance.insertUser(user);
         _cachedUser = user;
         return user;
       },
+      delayMs: 600,
     );
   }
 

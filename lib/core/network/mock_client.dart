@@ -2,7 +2,7 @@ import 'dart:async';
 
 class MockClient {
   static Future<T> simulateNetworkCall<T>({
-    required T Function() onSuccess,
+    required FutureOr<T> Function() onSuccess,
     int delayMs = 800,
     bool shouldFail = false,
   }) async {
@@ -10,6 +10,6 @@ class MockClient {
     if (shouldFail) {
       throw Exception('Simulated network error');
     }
-    return onSuccess();
+    return await onSuccess();
   }
 }

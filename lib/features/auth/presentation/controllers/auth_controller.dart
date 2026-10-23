@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/mock_auth_repository.dart';
 import '../../domain/entities/user_entity.dart';
@@ -22,6 +23,7 @@ class AuthController extends StateNotifier<AsyncValue<UserEntity?>> {
       final user = await _authRepository.login(email, password, role);
       state = AsyncValue.data(user);
     } catch (e, st) {
+      debugPrint('LOGIN ERROR: $e\n$st');
       state = AsyncValue.error(e, st);
     }
   }
@@ -46,6 +48,7 @@ class AuthController extends StateNotifier<AsyncValue<UserEntity?>> {
       );
       state = AsyncValue.data(user);
     } catch (e, st) {
+      debugPrint('REGISTER ERROR: $e\n$st');
       state = AsyncValue.error(e, st);
     }
   }
@@ -56,6 +59,7 @@ class AuthController extends StateNotifier<AsyncValue<UserEntity?>> {
       await _authRepository.logout();
       state = const AsyncValue.data(null);
     } catch (e, st) {
+      debugPrint('LOGOUT ERROR: $e\n$st');
       state = AsyncValue.error(e, st);
     }
   }

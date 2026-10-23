@@ -35,17 +35,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             _passwordController.text,
             _selectedRole,
           );
-      
-      final authState = ref.read(authControllerProvider);
-      if (authState.hasValue && authState.value != null) {
-        if (mounted) {
-          if (_selectedRole == UserRole.faculty) {
-            context.go('/teacher-dashboard');
-          } else {
-            context.go('/student-dashboard');
-          }
-        }
-      }
+      // GoRouter reactive redirect handles navigation automatically via authState
     }
   }
 
